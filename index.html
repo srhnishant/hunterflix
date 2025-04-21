@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hunterflix</title>
+    
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <img src="https://sdmntprwestus.oaiusercontent.com/files/00000000-1d94-6230-9b17-ba9c575600ef/raw?se=2025-04-20T17%3A43%3A55Z&sp=r&sv=2024-08-04&sr=b&scid=eb491a9f-87b4-5651-ab48-e3b98656fef6&skoid=a3336399-497e-45e5-8f28-4b88ecca3d1f&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-04-20T11%3A22%3A50Z&ske=2025-04-21T11%3A22%3A50Z&sks=b&skv=2024-08-04&sig=wfVAvz56YBDFKV0azsJWmfZjl3Z4CIlCe0NHNPPKRbA%3D" alt="Logo" class="logo">
+        <span class="site-title">Hunter Flix</span>
+        <nav id="main-nav">
+            <button id="login-btn" onclick="window.location.href='login.html'" class="form-btn animate-pop">Login</button>
+            <button id="logout-btn" class="form-btn animate-pop" style="display:none;">Logout</button>
+            <a href="admin.html" id="admin-link">Admin</a>
+        </nav>
+    </header>
+c    <main>
+        <!-- Removed the sticker-emoji div -->
+        <div class="controls">
+            <input type="text" id="search-input" placeholder="Search videos...">
+            <select id="category-select"></select>
+            <label>
+                <input type="checkbox" id="dark-mode-toggle"> Dark Mode
+            </label>
+        </div>
+        <h1>Video Library</h1>
+        <div id="video-grid"></div>
+        <div id="video-player-container" style="display:none;">
+            <video id="video-player" controls width="640"></video>
+            <button id="close-player">Close</button>
+        </div>
+    </main>
+    <footer style="text-align:center; padding:18px 0; font-size:1.1em; color:#fff; background:linear-gradient(90deg,#ff5e62 0%,#2196f3 100%); letter-spacing:1px;">
+        Made by SRH Nishant
+    </footer>
+    <script src="js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentUser = localStorage.getItem('currentUser');
+            var loginBtn = document.getElementById('login-btn');
+            var logoutBtn = document.getElementById('logout-btn');
+            if (currentUser) {
+                if (loginBtn) loginBtn.style.display = 'none';
+                if (logoutBtn) logoutBtn.style.display = 'inline-block';
+            } else {
+                if (loginBtn) loginBtn.style.display = 'inline-block';
+                if (logoutBtn) logoutBtn.style.display = 'none';
+            }
+            if (logoutBtn) {
+                logoutBtn.onclick = function() {
+                    localStorage.removeItem('currentUser');
+                    window.location.reload();
+                };
+            }
+            // Remove all user accounts
+            // localStorage.removeItem('users');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel - Video Streaming</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <img src="https://sdmntprwestus.oaiusercontent.com/files/00000000-1d94-6230-9b17-ba9c575600ef/raw?se=2025-04-20T17%3A43%3A55Z&sp=r&sv=2024-08-04&sr=b&scid=eb491a9f-87b4-5651-ab48-e3b98656fef6&skoid=a3336399-497e-45e5-8f28-4b88ecca3d1f&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-04-20T11%3A22%3A50Z&ske=2025-04-21T11%3A22%3A50Z&sks=b&skv=2024-08-04&sig=wfVAvz56YBDFKV0azsJWmfZjl3Z4CIlCe0NHNPPKRbA%3D" alt="Logo" class="logo animate-pop">
+        <span class="site-title animate-fadein">Hunter Flix <span style="font-size:1.2em;">✨🎬</span></span>
+        <nav>
+            <a href="index.html">🏠 Home</a>
+            <!-- Removed Profile link -->
+            <a href="login.html">🚪 Logout</a>
+            <!-- Remove or comment out the register link/button -->
+            <!-- <a href="register.html" id="register-link">📝 Register</a> -->
+        </nav>
+    </header>
+    <main>
+        <h2 class="animate-pop" style="text-align:center;letter-spacing:2px;">
+            <span style="font-size:1.5em;">🛠️</span> Admin Panel <span style="font-size:1.5em;">🌟</span>
+        </h2>
+        <div id="admin-login" class="animate-fadein">
+            <form id="admin-login-form">
+                <input type="text" id="admin-username" placeholder="Admin Username 👑" required>
+                <input type="password" id="admin-password" placeholder="Admin Password 🔒" required>
+                <button type="submit" class="form-btn animate-pop">Login 🚀</button>
+            </form>
+        </div>
+        <div id="video-management" style="display:none;" class="animate-fadein">
+            <h3 class="animate-pop">🎥 Manage Videos</h3>
+            <form id="add-video-form" enctype="multipart/form-data">
+                <input type="text" id="video-title" placeholder="Title ✏️" required>
+                <input type="text" id="video-description" placeholder="Description 📝" required>
+                <input type="text" id="video-category" placeholder="Category 🗂️" required>
+                <input type="number" id="video-season" placeholder="Season (e.g. 1) 🍥" min="1" required>
+                <input type="number" id="video-episode" placeholder="Episode (e.g. 1) 🎞️" min="1" required>
+                <input type="url" id="thumbnail-url" placeholder="Thumbnail Image URL (optional)">
+                <!-- Removed thumbnail file upload -->
+                <!-- <label>Thumbnail 🖼️: 
+                    <input type="file" id="video-thumbnail" accept="image/*">
+                </label> -->
+                <input type="url" id="video-url" placeholder="Video Embed URL (optional)">
+                <!-- Removed video file upload -->
+                <!-- <label>Video File 📹: 
+                    <input type="file" id="video-file" accept="video/*">
+                </label> -->
+                <button type="submit" class="form-btn animate-pop">Add Video ➕</button>
+            </form>
+            <div id="video-list"></div>
+            <hr>
+            <h3 class="animate-pop">👥 Manage Users</h3>
+            <!-- Register User Button for Admin -->
+            <button id="show-register-form-btn" class="form-btn animate-pop" style="margin-bottom:18px;">Register User</button>
+            
+            <!-- User Registration Form (hidden by default) -->
+            <form id="admin-add-user-form" class="form-container" style="display:none; margin-bottom:24px;">
+                <input type="text" id="new-user-name" placeholder="User Name" required>
+                <input type="email" id="new-user-email" placeholder="User Email" required>
+                <input type="password" id="new-user-password" placeholder="User Password" required>
+                <button type="submit" class="form-btn animate-pop">Add User 👤➕</button>
+            </form>
+            <div id="user-list"></div>
+        </div>
+    </main>
+    <script src="js/admin.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentUser = localStorage.getItem('currentUser');
+            // Removed Profile button logic
+            // Show/hide register form on button click
+            const showRegisterBtn = document.getElementById('show-register-form-btn');
+            const registerForm = document.getElementById('admin-add-user-form');
+            if (showRegisterBtn && registerForm) {
+                showRegisterBtn.addEventListener('click', function() {
+                    registerForm.style.display = registerForm.style.display === 'none' ? 'block' : 'none';
+                });
+            }
+        });
+    </script>
+</body>
+</html>
