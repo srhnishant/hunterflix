@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hunterflix</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 0; }
+        .container { max-width: 500px; margin: 40px auto; background: #fff; padding: 24px; border-radius: 8px; box-shadow: 0 2px 8px #0001; }
+        h2 { text-align: center; }
+        form { margin-bottom: 18px; }
+        input, button, select { width: 100%; padding: 8px; margin: 6px 0; border-radius: 4px; border: 1px solid #ccc; }
+        button { background: #2196f3; color: #fff; border: none; cursor: pointer; }
+        button:hover { background: #1769aa; }
+        .error { color: #d32f2f; margin: 6px 0; }
+        .success { color: #388e3c; margin: 6px 0; }
+        .video-list { margin-top: 20px; }
+        .video-item { background: #f9f9f9; padding: 10px; margin-bottom: 10px; border-radius: 4px; }
+        .video-thumb { max-width: 100%; height: auto; display: block; margin-bottom: 6px; }
+        .logout-btn { background: #d32f2f; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Hunterflix</h2>
+    <!-- Registration Form -->
+    <form id="register-form">
+        <h3>Register</h3>
+        <input type="email" id="reg-email" placeholder="Email" required>
+        <input type="password" id="reg-password" placeholder="Password" required minlength="6">
+        <button type="submit">Register</button>
+        <div class="error" id="reg-error"></div>
+        <div class="success" id="reg-success"></div>
+    </form>
+    <!-- Login Form -->
+    <form id="login-form">
+        <h3>Login</h3>
+        <input type="email" id="login-email" placeholder="Email" required>
+        <input type="password" id="login-password" placeholder="Password" required>
+        <button type="submit">Login</button>
+        <div class="error" id="login-error"></div>
+    </form>
+    <!-- Logout Button -->
+    <button id="logout-btn" class="logout-btn" style="display:none;">Logout</button>
+    <!-- Upload Form -->
+    <form id="upload-form" style="display:none;">
+        <h3>Upload Video</h3>
+        <input type="text" id="video-title" placeholder="Video Title" required>
+        <input type="file" id="video-file" accept="video/*,image/*" required>
+        <button type="submit">Upload</button>
+        <div class="error" id="upload-error"></div>
+        <div class="success" id="upload-success"></div>
+    </form>
+    <!-- Video List -->
+    <div class="video-list" id="video-list"></div>
+</div>
+<script>
+    // 1. Firebase Configuration (replace with your own)
+    const firebaseConfig = {
+        apiKey: "AIzaSyB7tFmE6sPhz_N95CEDo25ZsScqdUKUtP4",
+        authDomain: "hunterflix-8facc.firebaseapp.com",
+        databaseURL: "https://hunterflix-8facc.firebaseio.com",
+        projectId: "hunterflix-8facc",
+        storageBucket: "hunterflix-8facc.appspot.com",
+        messagingSenderId: "588121882574",
+        appId: "YOUR_APP_ID"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    // 2. DOM Elements
+    const regForm = document.getElementById('register-form');
+    const regEmail = document.getElementById('reg-email');
+    const regPassword = document.getElementById('reg-password');
+    const regError = document.getElementById('reg-error');
+    const regSuccess = document.getElementById('reg-success');
+    const loginForm = document.getElementById('login-form');
+    const loginEmail = document.getElementById('login-email');
+    const loginPassword = document.getElementById('login-password');
+    const loginError = document.getElementById('login-error');
+    const logoutBtn = document.getElementById('logout-btn');
+    const uploadForm = document.getElementById('upload-form');
+    const videoTitle = document.getElementById('video-title');
+    const videoFile = document.getElementById('video-file');
+    const uploadError = document.getElementById('upload-error');
+    const uploadSuccess = document.getElementById('upload-success');
+    const videoList = document.getElementById('video-list');
+
+    // 3. Auth State Listener
+    firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+            loginForm.style.display = 'none';
+            regForm.style.display = 'none';
+            logoutBtn.style.display = 'block';
+            uploadForm.style.display = 'block';
+        } else {
+            loginForm.style.display = 'block';
+            regForm.style.display = 'block';
+            logoutBtn.style.display = 'none';
+            uploadForm.style.display = 'none';
+        }
+    });
+
+    // 4. Registration
+    regForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        regError.textContent = '';
+        regSuccess.textContent = '';
+        if (regPassword.value.length < 6) {
+            regError.textContent = 'Password must be at least 6 characters.';
+            return;
+        }
+        firebase.auth().createUserWithEmailAndPassword(regEmail.value, regPassword.value)
+            .then(() => {
+                regSuccess.textContent = 'Registration successful! You can now log in.';
+                regForm.reset();
+            })
+            .catch(err => {
+                regError.textContent = err.message;
+            });
+    });
+
+    // 5. Login
+    loginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        loginError.textContent = '';
+        firebase.auth().signInWithEmailAndPassword(loginEmail.value, loginPassword.value)
+            .then(() => {
+                loginForm.reset();
+            })
+            .catch(err => {
+                loginError.textContent = err.message;
+            });
+    });
+
+    // 6. Logout
+    logoutBtn.addEventListener('click', function() {
+        firebase.auth().signOut();
+    });
+
+    // 7. Upload Video/Image
+    uploadForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        uploadError.textContent = '';
+        uploadSuccess.textContent = '';
+        const file = videoFile.files[0];
+        const title = videoTitle.value.trim();
+        if (!file || !title) {
+            uploadError.textContent = 'Please provide a title and select a file.';
+            return;
+        }
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            uploadError.textContent = 'You must be logged in to upload.';
+            return;
+        }
+        const storageRef = firebase.storage().ref('videos/' + Date.now() + '_' + file.name);
+        storageRef.put(file)
+            .then(snapshot => snapshot.ref.getDownloadURL())
+            .then(url => {
+                // Save metadata to Realtime Database
+                const videoData = {
+                    title: title,
+                    url: url,
+                    type: file.type,
+                    uploadedBy: user.email,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                };
+                return firebase.database().ref('videos').push(videoData);
+            })
+            .then(() => {
+                uploadSuccess.textContent = 'Upload successful!';
+                uploadForm.reset();
+            })
+            .catch(err => {
+                uploadError.textContent = err.message;
+            });
+    });
+
+    // 8. Display Videos Dynamically
+    function renderVideoList(snapshot) {
+        videoList.innerHTML = '';
+        const videos = snapshot.val();
+        if (!videos) {
+            videoList.innerHTML = '<p>No videos uploaded yet.</p>';
+            return;
+        }
+        // Display newest first
+        const videoArray = Object.entries(videos).sort((a, b) => b[1].timestamp - a[1].timestamp);
+        videoArray.forEach(([key, video]) => {
+            const div = document.createElement('div');
+            div.className = 'video-item';
+            if (video.type.startsWith('image/')) {
+                div.innerHTML = `<img src="${video.url}" class="video-thumb" alt="${video.title}">`;
+            } else if (video.type.startsWith('video/')) {
+                div.innerHTML = `<video src="${video.url}" class="video-thumb" controls></video>`;
+            }
+            div.innerHTML += `<strong>${video.title}</strong><br><small>By: ${video.uploadedBy}</small>`;
+            videoList.appendChild(div);
+        });
+    }
+    firebase.database().ref('videos').on('value', renderVideoList);
+
+</script>
+<!-- 
+    Firebase Security Rules (set in Firebase Console):
+    1. Authentication:
+        {
+          "rules": {
+            ".read": "auth != null",
+            ".write": "auth != null"
+          }
+        }
+    2. Storage:
+        service firebase.storage {
+          match /b/{bucket}/o {
+            match /videos/{allPaths=**} {
+              allow read, write: if request.auth != null;
+            }
+          }
+        }
+    Adjust rules as needed for your use case!
+-->
+</body>
+</html>
